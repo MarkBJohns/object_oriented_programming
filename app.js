@@ -44,7 +44,7 @@ object2['name']='Mark';
 //      do anything by itself, but there are various methods (Math.random(), Math.floor(), etc) that you can
 //      add to the Math object.
 
-const add=(x,y)=>x+y;
+const add=(x,y)=>x+y; 
 const subtract=(x,y)=>x-y;
 const multiply=(x,y)=>x*y;
 const divide=(x,y)=>{
@@ -105,7 +105,7 @@ const ourMath={
 
 // --------------------------------------------------------------
 
-const Triangle={
+const triangle={
     a:      3,
     b:      4,
     angle1: 90,
@@ -114,18 +114,60 @@ const Triangle={
         return (this.a*this.b)/2
     },
     getHypotenuse(){
-        return Math.sqrt(this.a**this.b);
+        return Math.sqrt(this.a**2+this.b**2);
     },
     getThirdAngle(){
         return 180-(this.angle1+this.angle2);
     }
 }
 
-// In this version, the getArea function references the a and b values already saved in Triangle, and uses the
+// In this version, the getArea function references the a and b values already saved in 'triangle', and uses the
 //      'this' keyword to do so. Using 'this' within the scope of an object will let you call the values of the
 //      keys inside that object. Now finding the area doesn't even require arguments, and you can find it by
-//      entering 'Triangles.getArea()' into the console. This works for any functions you can think of that 
+//      entering 'triangle.getArea()' into the console. This works for any functions you can think of that 
 //      use data we can store in the object itself.
 
 // Without getting into too much detail yet, keep in mind that trying to use 'this' with fat arrow functions
 //      will result in different behavior.
+
+// ----------------------------------------------------------------------------------------------------------------
+
+//      CONSTRUCTOR FUNCTIONS
+
+// --------------------------------------------------------------
+
+// Our methods work for 'triangle', and we've future-proofed our functions to any size changes we might make by
+//      using 'this', but ultimately we'll still only have one triangle at a time. What if we want to have 
+//      multiple triangles at a time that still share the same functionality?
+
+function Triangle(a,b,angle1,angle2){
+    if(angle1+angle2>179){
+        throw new Error("Triangle cannot exceed 180 degrees");
+    }
+    this.a=a;
+    this.b=b;
+    this.angle1=angle1;
+    this.angle2=angle2;
+    this.getArea=function(){
+        return (this.a*this.b)/2
+    };
+    this.getHypotenuse=function(){
+        return Math.sqrt(this.a**2+this.b**2)
+    };
+    this.getThirdAngle=function(){
+        return 180-(this.angle1+this.angle2);
+    }
+};
+
+//      This is called a constructor function, usually signified by starting with an uppercase letter. If you
+//      enter 'Triangle()' into the console, it will return undefined, because you're not technically
+//      performing anything, but we can use it for its intended purpose with the keyword 'new'. Just like we 
+//      used new to create maps and sets, we can use it to create a new triangle object that shares the
+//      same structure as 'triangle' while changing the values.
+
+const acuteTriangle=new Triangle(9,12,60,60);
+const rightTriangle=new Triangle(7,24,90,45);
+const obtuseTriangle=new Triangle(8,15,100,40);
+
+//      Now acuteTriangle, rightTriangle, and obtuseTriangle are all objects with two predetermined side
+//      lengths, two predetermined corner angles, and the functionality to determine the third length or angle.
