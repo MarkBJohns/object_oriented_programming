@@ -140,7 +140,7 @@ const triangle={
 //      using 'this', but ultimately we'll still only have one triangle at a time. What if we want to have 
 //      multiple triangles at a time that still share the same functionality?
 
-function Triangle(a,b,angle1,angle2){
+function triangleTemplate(a,b,angle1,angle2){
     if(angle1+angle2>179){
         throw new Error("Triangle cannot exceed 180 degrees");
     }
@@ -160,14 +160,14 @@ function Triangle(a,b,angle1,angle2){
 };
 
 //      This is called a constructor function, usually signified by starting with an uppercase letter. If you
-//      enter 'Triangle()' into the console, it will return undefined, because you're not technically
+//      enter 'triangleTemplate()' into the console, it will return undefined, because you're not technically
 //      performing anything, but we can use it for its intended purpose with the keyword 'new'. Just like we 
 //      used new to create maps and sets, we can use it to create a new triangle object that shares the
-//      same structure as 'triangle' while changing the values.
+//      same structure as 'triangleTemplate' while changing the values.
 
-const acuteTriangle=new Triangle(9,12,60,60);
-const rightTriangle=new Triangle(7,24,90,45);
-const obtuseTriangle=new Triangle(8,15,100,40);
+// const acuteTriangle=new triangleTemplate(9,12,60,60);
+// const rightTriangle=new triangleTemplate(7,24,90,45);
+// const obtuseTriangle=new triangleTemplate(8,15,100,40);
 
 //      Now acuteTriangle, rightTriangle, and obtuseTriangle are all objects with two predetermined side
 //      lengths, two predetermined corner angles, and the functionality to determine the third length or angle.
@@ -308,4 +308,128 @@ const regularPentagon=new Pentagon(5);
 // It's important to remember that you shouldn't use 'return' anywhere in your constructor, as it will stop the
 //      rest of the function from running, but it won't stop the creation of the new object. Adding 'return'
 //      in the constructor will result in an object that doesn't have the necessary data. This is why throwing
-//      an error instead is optimal.
+//      an error instead is optimal. It's also best to be specific when writing a custom error, so the user 
+//      knows exactly why the parameters were wrong and knows how to resolve the issue.
+
+// ----------------------------------------------------------------------------------------------------------------
+
+//      METHODS
+
+// --------------------------------------------------------------
+
+// The functions nested in objected being recalled via "." are called 'methods', and the functions stored in 
+//      classes are specifically called 'instance methods'.
+
+// ----------------------------------------------------------------------------------------------------------------
+
+//      INHERITANCE
+
+// --------------------------------------------------------------
+
+class Triangle{
+    constructor(a,b,c){
+        for(let side of [a,b,c]){
+            if(!Number.isFinite(side)||side<=0){
+                throw new Error('Sides must be positive numbers');
+            }
+        }
+        this.a=a;
+        this.b=b;
+        this.c=c;
+    }
+    getArea(){
+        const {a,b,c}=this;
+        const s=(a+b+c)/2;
+        return Math.sqrt(s*(s-a)*(s-b)*(s-c));
+    }
+}
+
+// Here we have a class to create triangle objects, where the only parameters that need to be entered are 
+//      the length of each side. However, there are multiple types of triangles, each with their own more 
+//      specific requirements.
+
+// class rightTriangle{
+//     constructor(a,b,c){
+//         for(let side of [a,b,c]){
+//             if(!Number.isFinite(side)||side<=0){
+//                 throw new Error('Sides must be positive numbers');
+//             }
+//         }
+//         if((a**2)+(b**2)!==(c**2)){
+//             throw new Error('Invalid "C" side for right triangle');
+//         }
+//         this.a=a;
+//         this.b=b;
+//         this.c=c;
+//     }
+// }
+
+// class isoscelesTriangle{
+//     constructor(a,b,c){
+//         for(let side of [a,b,c]){
+//             if(!Number.isFinite(side)||side<=0){
+//                 throw new Error('Sides must be positive numbers');
+//             }
+//         }
+//         if(!(a===b||b==c||a==c)){
+//             throw new Error('At least two sides must be equal to be isosceles');
+//         }
+//         if(a+b<=c||a+c<=b||b+c<=a){
+//             throw new Error('The sum of the equal sides must be greater than the length of the long side');
+//         }
+//         this.a=a;
+//         this.b=b;
+//         this.c=c;
+//     }
+// }
+
+//      More specific classes of this sort can get incredibly tedious, as there are basic requirements needing
+//      to be met for every type of triangle, and all these classes need those constructors duplicated. You can
+//      see this in rightTriangle and isoscelesTriangle, where the basic requirements are duplicated and the 
+//      beginning of each class is nearly identical.
+
+// --------------------------------------------------------------
+
+// You can avoid the headache by using the 'extends' keyword and the 'super()' function.
+
+class rightTriangle extends Triangle{
+    constructor(a,b,c){
+        if(a**2+b**2!==c**2){
+            throw new Error('Invalid "C" side for right triangle');
+        }
+        super(a,b,c);
+    }
+}
+
+class isosTriangle extends Triangle{
+    constructor(a,b,c){
+        if(!(a===b||b==c||a==c)){
+        throw new Error('At least two sides must be equal to be isosceles');
+        }
+        if(a+b<=c||a+c<=b||b+c<=a){
+        throw new Error('The sum of the equal sides must be greater than the length of the long side');
+        }
+        super(a,b,c);
+    }
+}
+
+//      Since the baseline requirements for all triangles still apply to the specific triangles, we can piggy-
+//      back off the 'Triangles' class by extending them. For the rightTriangle and isosTriangle classes, all
+//      you have to add are the additional requirements because the Triangle requirements are grandfathered in.
+
+// The super() function then goes back to reference Triangle for any methods. Because right/isosTriangle are
+//      extensions, they're still in the Triangle class and get to keep that functionality.
+
+const newRight=new rightTriangle(3,4,5);
+const newIsos=new isosTriangle(2,2,3);
+
+//      If you enter newRight.getArea() and newIsos.getArea() in the console, both will return an area value,
+//      using the function created in Triangle.
+
+// --------------------------------------------------------------
+
+// Keep in mind that even extension classes need a constructor method, and when you use the super() function,
+//      be sure to include what parameters will be necessary.
+
+// ----------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------
