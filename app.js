@@ -246,3 +246,43 @@ const bigRectangle=new Quadrilateral(20,8);
 //      the functions in the object it returns. However, you can still run all of the functions in the 
 //      Quadrilateral.prototype object. By making those functions prototypes, they take up no space in any
 //      quadrilateral we create, but can still be recalled.
+
+// ----------------------------------------------------------------------------------------------------------------
+
+//      CLASSES
+
+// --------------------------------------------------------------
+
+// While prototypes are useful, there's an even more efficient way to create object templates, called 'classes'.
+
+class Pentagon {
+    constructor(side){
+        this.side=side;
+    }
+    getPerimeter(){
+        return this.side*5;
+    }
+    getApotem(){
+        return this.side/(2*Math.tan(Math.PI/5));
+    }
+    getArea(){
+        return .25*Math.sqrt(5*(5+2*Math.sqrt(5)))*(this.side**2);
+    }
+    sides(){
+        console.log(`Each side has a length of ${this.side}`);
+    }
+}
+
+// Example usage for regular pentagon
+const regularPentagon=new Pentagon(5);
+
+//      If you enter regularPentagon in the console, it's an underwhelming object with the single key/value 
+//      pair of "side:5", but the functions in 'class Pentagon' can all be used on regularPentagon, as well as
+//      any new pentagons you create. Using 'class' to set up these templates allows anything entered into the
+//      class to become a prototype method for that template. 
+
+// --------------------------------------------------------------
+
+// The 'constructor' method is important because it determines the parameters you want each new element in this
+//      class to require, in this case, the length of the pentagon sides. Remember to make the class name begin
+//      with an uppercase letter to differentiate them from other functions or variables.
