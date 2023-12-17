@@ -254,10 +254,22 @@ const bigRectangle=new Quadrilateral(20,8);
 // --------------------------------------------------------------
 
 // While prototypes are useful, there's an even more efficient way to create object templates, called 'classes'.
+//      Remember to make the class name begin with an uppercase letter to differentiate them from other
+//      functions or variables.
 
 class Pentagon {
-    constructor(side){
+    constructor(...sides){
+        if(sides.length!==1){
+            throw new Error('Please enter a single value');
+        }
+        const side=sides[0];
+        if(typeof side!=='number'||isNaN(side)){
+            throw new Error('Please enter a number value');
+        }
         this.side=side;
+        if(side<=0){
+            throw new Error('Please enter a positive number');
+        }
     }
     getPerimeter(){
         return this.side*5;
@@ -283,6 +295,17 @@ const regularPentagon=new Pentagon(5);
 
 // --------------------------------------------------------------
 
+//      CONSTRUCTOR
+
+// --------------------------------------------------------------
+
 // The 'constructor' method is important because it determines the parameters you want each new element in this
-//      class to require, in this case, the length of the pentagon sides. Remember to make the class name begin
-//      with an uppercase letter to differentiate them from other functions or variables.
+//      class to require, in this case, the length of the pentagon sides. You can also use the constructor to
+//      validate your parameters. For instance you can't have a negative side length, you have to have a number
+//      side length, and you can't have more than one parameter, so setting up the constructor to throw custom
+//      error messages is a good way to ensure the template runs smoothly.
+
+// It's important to remember that you shouldn't use 'return' anywhere in your constructor, as it will stop the
+//      rest of the function from running, but it won't stop the creation of the new object. Adding 'return'
+//      in the constructor will result in an object that doesn't have the necessary data. This is why throwing
+//      an error instead is optimal.
