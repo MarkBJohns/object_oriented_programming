@@ -433,3 +433,23 @@ const newIsos=new isosTriangle(2,2,3);
 
 // ----------------------------------------------------------------------------------------------------------------
 // ----------------------------------------------------------------------------------------------------------------
+
+//                                                 THIS
+
+// ----------------------------------------------------------------------------------------------------------------
+
+// One of the most confusing, slippery keywords in JavaScript, 'this' is extremely context dependant and will
+//      mean completely different things depending on where it's used.
+
+const absol={
+    name:   'Snowball',
+    species:'Absol',
+    attack: function(attackName){
+        console.log(`${this.name} used ${attackName}!`);
+    }
+}
+
+// We can use 'this' here to complete the attack() function string, as 'absol.attack('Sucker Punch'); will log
+//      "Snowball used Sucker Punch!". But there are some quirks that show up here.
+
+const snowballMove=absol.attack;
