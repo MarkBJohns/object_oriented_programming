@@ -171,3 +171,78 @@ const obtuseTriangle=new Triangle(8,15,100,40);
 
 //      Now acuteTriangle, rightTriangle, and obtuseTriangle are all objects with two predetermined side
 //      lengths, two predetermined corner angles, and the functionality to determine the third length or angle.
+
+// ----------------------------------------------------------------------------------------------------------------
+
+//      PROTOTYPES
+
+// --------------------------------------------------------------
+
+// You've likely noticed that there are built in methods, such as 'add', 'random', 'from', 'filter', 'reduce',
+//      etc, that come standard in vanilla javascript.
+
+const numberArray=[1,2,3,4,5];
+
+const squaredNumbers=numberArray.map((val)=>val*val);
+
+//      If you enter squaredNumbers into the console, it will return [1,4,9,16,25], because of the map() 
+//      method it applied to numberArray. But where did map() come from?
+
+// --------------------------------------------------------------
+
+// Because numberArray is an array, any methods for it will be array methods. Array methods are stored in 
+//      object called a 'prototype', which you can see by entering Array.prototype into the console, which will
+//      show you the list of all the array methods. You can do this for sets, maps, objects, 'Math', etc, as 
+//      well. Prototypes are important because they're built in, but also because they're universal. Nobody had
+//      to code a method function for numberArray, and you can use map() on every possible array as well.
+
+// This universality is extremely useful, but is also something to be careful of. You can completely overwrite
+//      a standard prototype method, and doing so will impact every data type rather than the specific object,
+//      array, set, etc you're working on.
+
+// Array.prototype.push=function(val){
+//     console.log(`I don't wanna add ${val} tbh`);
+// }
+
+//      If you uncomment the code above, you're likely to get flooded with multiple error messages, and if you
+//      try to enter numberAray.push(8), it will return a message about how much it doesn't want to do that and
+//      numberArray will be unchanged.
+
+// The only useful application is for something called a polyfill, which we won't cover just yet.
+
+// --------------------------------------------------------------
+
+// While it's ill-advised to change the prototype methods for universal data types, it's also incredibly useful
+//      to change the prototypes for your own constructor functions. Going back to Triangle, if you enter 
+//      Triangle.prototype, you'll see you automatically have a prototype object even though you never added it.
+//      The functions you added to Triangle are carried over, but making them prototypes instead can carry over
+//      changes to the methods more dynamically (instead of changing every object), run faster, and save memory
+//      since the functions are only created once and shared rather than being called for every object.
+
+function Quadrilateral(width,height){
+    this.width=width;
+    this.height=height;
+};
+
+Quadrilateral.prototype={
+    isSquare(){
+        return this.width===this.height;
+    },
+    getArea(){
+        return this.width*this.height;
+    },
+    getPerimeter(){
+        return (this.width*2)+(this.height*2);
+    },
+    getDiagonal(){
+        return Math.sqrt(this.width**2+this.height**2);
+    }
+}
+
+const littleSquare=new Quadrilateral(5,5);
+const bigRectangle=new Quadrilateral(20,8);
+
+//      If you enter littleSquare or bigRectangle into the console, unlike acuteTriangle, etc, you won't see
+//      the functions in the object it returns. However, you can still run all of the functions in the 
+//      Quadrilateral.prototype object. By making those functions prototypes, they take up no space in any
+//      quadrilateral we create, but can still be recalled.
