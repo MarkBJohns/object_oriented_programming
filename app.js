@@ -444,12 +444,86 @@ const newIsos=new isosTriangle(2,2,3);
 const absol={
     name:   'Snowball',
     species:'Absol',
+    dexNo:  359,
     attack: function(attackName){
         console.log(`${this.name} used ${attackName}!`);
+    },
+    dexEntry: function(){
+        console.log(`${this.species}, No. ${this.dexNo}`);
     }
+
 }
 
 // We can use 'this' here to complete the attack() function string, as 'absol.attack('Sucker Punch'); will log
 //      "Snowball used Sucker Punch!". But there are some quirks that show up here.
 
 const snowballMove=absol.attack;
+
+//      You can test in the console that the console sees snowballMove and absol.attack as identical, in that
+//      'snowballMove===absol.attack' will return "true". However, if you enter absol.attack(), it will return
+//      "Snowball used undefined!", while snowballMove() will return " used undefined!". You can add whatever
+//      attackName parameter you want to either variable to replace the undefined, but snowballMove will never
+//      include the 'Snowball' name. That's because there's no 'this' for snowballMove to refer to, so it won't
+//      have a 'name' value to return.
+
+// ----------------------------------------------------------------------------------------------------------------
+
+//      WINDOW OBJECT
+
+// --------------------------------------------------------------
+
+// The 'this' keyword is scoped, like variables are, to a specific object. For example:
+
+function whatIsThis(){
+    console.log(this, 'is "this"');
+}
+
+const thisObject={
+    function:   whatIsThis
+};
+
+const thatObject={
+    helloWorld: whatIsThis
+};
+
+//      if you enter thisObject.function() into the console it will return "{function: f} is 'this'",  which is
+//      the key/value pair of 'thisObject', while thatObject.helloWorld() returns "{helloWorld: f} is 'this'".
+//      In both cases, 'this' is refering to the content of the object that whatIsThis is attached to. However,
+//      if you run just whatIsThis() in the console, you get a huge object called 'Window'.
+
+// --------------------------------------------------------------
+
+// FUNCTIONS AREN'T REAL
+
+// --------------------------------------------------------------
+
+// The difference between functions and methods are that methods have to be called on something, whereas 
+//      functions are universal. But that isn't entirely true. What we consider a 'function' is actually still a
+//      method, being called upon something, and that something is the Window.
+
+// --------------------------------------------------------------
+
+// WINDOW
+
+// --------------------------------------------------------------
+
+// Take a look at this alert function:
+
+function makeAnAlert(){
+    alert('This is an alert');
+};
+
+// There's no specified object to attach this alert to, but if you run the function, the alert shows up
+//      nonetheless. That's because the window itself is an object that JavaScript runs methods for, and a
+//      method used on the Window object is called a function.
+
+// Look back at our 'absol' object and the attack() function it ran, specifically how absol.attack() returned
+//      'Snowball used undefined!' while snowballMove() returned ' used undefined!'. The reason snowballMove()
+//      returned an emtpy name value instead of undefined like it did for the move, is because the Window object
+//      actually does have a 'name' value set to an empty string, which you can test with window.name in the 
+//      console.
+
+const absolDexEntry=absol.dexEntry;
+
+//      On the other hand, absolDexEntry() will return 'undefined, No. undefined' because window does not have a
+//      'species' or 'dexNo' value.
