@@ -445,13 +445,21 @@ const absol={
     name:   'Snowball',
     species:'Absol',
     dexNo:  359,
+    region: 'Hoenn',
+    type:   ['Dark',null],
     attack: function(attackName){
         console.log(`${this.name} used ${attackName}!`);
     },
     dexEntry: function(){
         console.log(`${this.species}, No. ${this.dexNo}`);
+    },
+    declareType: function(){
+        if(!this.type[1]){
+            return `${this.name} is a ${this.type[0]} type`
+        }else{
+            return `${this.name} is a ${this.type[0]} and ${this.type[1]} type`
+        }
     }
-
 }
 
 // We can use 'this' here to complete the attack() function string, as 'absol.attack('Sucker Punch'); will log
@@ -527,3 +535,232 @@ const absolDexEntry=absol.dexEntry;
 
 //      On the other hand, absolDexEntry() will return 'undefined, No. undefined' because window does not have a
 //      'species' or 'dexNo' value.
+
+// ----------------------------------------------------------------------------------------------------------------
+
+//      STRICT MODE
+
+// --------------------------------------------------------------
+
+// There are many changes in strict mode you can read about later, but an important one is that any use of 'this'
+//      that is unspecified will return 'undefined' instead of attaching to the window.
+
+// ----------------------------------------------------------------------------------------------------------------
+
+//      CALL
+
+// --------------------------------------------------------------
+
+// If you ever need to specify what 'this' should be in an object function, you can use the 'call()' method.
+//      For instance, if we enter snowballMove() in the console, it returns " used undefined", but we can still
+//      use it to run functions. use .call(object,parameter). The object specified becomes the 'this' for attack(),
+//      but attack still needs a parameter for attackName, which we set as a string after the object.
+
+// const snowballSlash=snowballMove.call(absol,'Slash');
+// const snowballSckrPnch=snowballMove.call(absol,'Sucker Punch');
+// const snowballRazrWind=snowballMove.call(absol,'Razor Wind');
+
+//      Un-commenting any of these will run "Snow ball used ____ !", with Slash, Sucker Punch, or Razor Wind.
+//      The 'attack' function in question uses 'this' for the console log, so you can set permanent variables
+//      for each attack using call().
+
+// --------------------------------------------------------------
+
+// You can also use call() on objects that dont share the same function by dynamically adding that property.
+
+const arcanine={
+    name:   'Archie',
+    species:'Arcanine',
+    dexNo:  59,
+    region: 'Kanto',
+    type:   ['Fire',null],
+    dexEntry: function(){
+        console.log(`${this.species}, No. ${this.dexNo}`);
+    }
+}
+
+// const archieFlarBltz=snowballMove.call(arcanine,'Flare Blitz');
+// const archieExtrmSpeed=snowballMove.call(arcanine,'Extremespeed');
+// const archieOverheat=snowballMove.call(arcanine,'Overheat');
+
+//      The arcanine object doesn't have the attack function, but if you un-comment the lines above, the console
+//      will show Archie using the moves instead of Snowball, even though the code says 'snowballMove.call()'.
+
+// Call allows you to piggyback off other code, using functions from objects in other objects as well.
+
+// ----------------------------------------------------------------------------------------------------------------
+
+//      BIND
+
+// --------------------------------------------------------------
+
+// While call() borrows code and runs one function, 'bind()' can permanently lock a parameter into a funciton.
+
+const snowballDbleTeam=absol.attack;
+
+//      As we know from earlier, if you enter snowballDbleTeam('Double Team') into the console, you won't get 
+//      the intended result, because there's no object to hold on to. What you can do instead is 'bind' an 
+//      object to your function:
+
+const snowballAttack=snowballDbleTeam.bind(absol);
+
+//      Now if you un-comment this code and try snowballAttack('Double Team'), or any other attack name
+//      parameter, it will return the intended result, because 'absol' is now a built in part of snowballAttack.
+
+// --------------------------------------------------------------
+
+// It's important to note there can be pretty powerful binding, in that the bind will overwrite any conflicts.
+
+const flygon={
+    name:   'Bugsy',
+    species:'Flygon',
+    region: 'Hoenn',
+    dexNo:   330,
+    type:   ['Ground','Dragon'],
+    attack: snowballAttack
+}
+
+// Now if we enter flygon.attack('Fly'), you might expect to return 'Bugsy used fly!', because the 'attack' 
+//      function we're copying uses 'this.name'. However, snowballAttack is binded to absol, and will use absol
+//      as its parameter in all contexts, so it will return 'Snowball used Fly!'
+
+const flygonTypes=absol.declareType.bind(flygon);
+
+//      However, if the functions don't compete, binding can work perfectly, like the variable above returning
+//      "Bugsy is a Ground and Dragon type".
+
+
+// --------------------------------------------------------------
+
+// In addition to binding a particular object, you can also bind an argument to make the variable even more
+//      specific and consistent.
+
+const flygonDrgnClaw=snowballMove.bind(flygon,'Dragon Claw');
+
+//      Even though the 'attack' function being called isn't connected to 'flygon', calling flygonDrgnClaw will
+//      always return 'Bugsy used Dragon Claw!', because the object and parameter have been binded.
+
+// The first parameter that bind() takes in is 'this' as the first argument, but you can work around that to
+//      create functions for a general type of problem. For example, a tax rate isn't universal, but they are
+//      constant throughout an area. So a function that determines how much a product would cost after sales
+//      tax would need two parameters, the price of the product and the tax rate.
+
+function addSalesTax(taxRate,price){
+    return price+price*taxRate;
+}
+
+//      You don't want the taxRate to be static, because that confines it to specific areas, but you don't want
+//      to enter the taxRate parameter for every single item if you're getting them all from the same place.
+
+const CATaxRate=addSalesTax.bind(null,.0725);
+const FLTaxRate=addSalesTax.bind(null,.06);
+
+//      Now instead of having to enter .0725 or .06 into every function, you can just use CATaxRate(price). But
+//      because each product will have its own price, you don't want a 'this' built into the function, so it's
+//      set to 'null'.
+
+const shoppingList={
+    milk:   5.99,
+    cereal: 6.49,
+    eggs:   4.49,
+    bread:  3.99
+}
+
+//      Now you can take a shopping list and plug it into either one of these functions to find out how much it
+//      would cost depending one where you buy it.
+
+function totalPriceCA(shopList){
+    const calcTaxes=Object.values(shopList).map(price=>CATaxRate(price));
+    const total=calcTaxes.reduce((sum,value)=>sum+value,0);
+    return parseFloat(total.toFixed(2));
+}
+function totalPriceFL(shopList){
+    const calcTaxes=Object.values(shopList).map(price=>FLTaxRate(price));
+    const total=calcTaxes.reduce((sum,value)=>sum+value,0);
+    return parseFloat(total.toFixed(2)); 
+}
+
+// --------------------------------------------------------------
+
+// Binding is useful for callback functions, especially event listeners.
+
+const absolBtn=document.querySelectorAll('#bind button')[0];
+const arcanineBtn=document.querySelectorAll('#bind button')[1];
+const flygonBtn=document.querySelectorAll('#bind button')[2];
+const typesText=document.querySelector('#bind input');
+
+//      This function to find which region the Pokemon is available in isn't located in any of the objects...
+
+function findRegion(pokemon){
+    const message=`${this.species} can be found in the ${this.region} Region`;
+    typesText.value=message;
+}
+
+//      ... and if you try to enter findRegion(flygon) into the console, it will return undefined. However, you
+//      can bind it to an object to return a result, and add that to an html element, as you can see by clicking
+//      any of the buttons on this webpage
+
+absolBtn.addEventListener('click',findRegion.bind(absol));
+arcanineBtn.addEventListener('click',findRegion.bind(arcanine));
+flygonBtn.addEventListener('click',findRegion.bind(flygon));
+
+// ----------------------------------------------------------------------------------------------------------------
+
+//      ARROW FUNCTIONS
+
+// --------------------------------------------------------------
+
+const goButton=document.querySelector('#arrow button');
+const goText=document.querySelector('#arrow input');
+
+// When using an arrow function, there is no 'this' created. It can be an issue when you have an object you're
+//      trying to reference, but sometimes it can be a benefit.
+
+const announcer={
+    msg1:   '3',
+    msg2:   '2',
+    msg3:   '1',
+    msg4:   'Go!!',
+    countdown:()=> `${this.msg1}, ${this.msg2}, ${this.msg3}, ${this.msg4}`,
+    countdown2:function(){
+        return `${this.msg1}, ${this.msg2}, ${this.msg3}, ${this.msg4}`
+    }
+}
+
+
+//      If you enter announcer.countdown() into the console, it will return "undefined, undefined, undefined,
+//      undefined", because the arrow function didn't create a 'this' for the function to reference, while
+//      announcer.countdown2() return "3, 2, 1, Go!!" as intended.
+
+function announceOnWebpage(obj){
+    const arr=[this.msg1,this.msg2,this.msg3,this.msg4];
+    function display(index){
+        const delay=index===0?0:1000;
+        // if 'index' is 0, delay=0, if not, delay=1000
+
+        if(index<arr.length){
+            setTimeout(()=>{
+                goText.value=arr[index];
+                display(index+1);
+            },delay);
+        }
+
+        // if(index<arr.length){
+        //     setTimeout((function(){
+        //         goText.value=arr[index];
+        //         display(index+1);
+        //     },delay));
+        // }
+    }
+    display(0);
+}
+
+goButton.addEventListener('click',announceOnWebpage.bind(announcer));
+
+//      If you click 'Start' on the webpage, nothing happens. But this is because of the setTimeout function.
+//      the setTimeout function creates a 'this', in this case, the window itself. And because there's no msg
+//      values in the window, the browser doesn't know what to do.
+
+//      But because arrow functions don't create a 'this', you can use it instead to prevent the setTimeout
+//      function from overwriting the announceOnWebpage function. Un-comment the first 'if' conditional and
+//      comment the second, and the Start button will work as intended.
